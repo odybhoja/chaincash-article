@@ -70,7 +70,8 @@ ChainCash addresses this by enabling:
 
 ## How ChainCash Works: Technical Architecture
 
-### Core Components┌─────────────────────────────────────────────────────────────────┐
+### Core Components
+┌─────────────────────────────────────────────────────────────────┐
 │                    CHAINCASH ARCHITECTURE                       │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
@@ -148,7 +149,8 @@ ChainCash operates on a **hybrid model**—not pure off-chain like Lightning Net
 | **Final Settlement** | Ownership transfer finalized on-chain |
 | **Note Verification** | Recipients must verify reserves exist on-chain |
 
-### The Hybrid Flow Diagram┌────────────────────────────────────────────────────────────────────┐
+### The Hybrid Flow Diagram
+┌────────────────────────────────────────────────────────────────────┐
 │                     HYBRID OFF-CHAIN / ON-CHAIN                    │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
