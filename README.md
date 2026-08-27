@@ -71,25 +71,29 @@ ChainCash addresses this by enabling:
 ## How ChainCash Works: Technical Architecture
 
 ### Core Components
+
+```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    CHAINCASH ARCHITECTURE                       │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  AGENTS          RESERVES         NOTES        SMART CONTRACTS │
-│  ──────          ───────          ────         ──────────────  │
-│  • Users/        • Digital        • Digital    • Enforce       │
-│    Entities        assets           IOU notes    rules         │
-│  • Issue notes   • Backing        • Signed     • Track        │
-│  • Maintain      • Collateral     • Transfer   • Validate     │
-│    reputation      level            capable      ownership     │
+│  AGENTS          RESERVES         NOTES        SMART CONTRACTS  │
+│  ──────          ───────          ────         ──────────────   │
+│  • Users/        • Digital        • Digital    • Enforce        │
+│    Entities        assets           IOU notes    rules          │
+│  • Issue notes   • Backing        • Signed     • Track          │
+│  • Maintain      • Collateral     • Transfer   • Validate       │
+│    reputation      level            capable      ownership      │
 │                                                                 │
 │  TRUST MECHANISMS                                               │
-│  ─────────────────                                                 │
-│  • Reputation signatures                                          │
-│  • Whitelist/blacklist filters                                    │
-│  • Client-side acceptance predicates                              │
+│  ─────────────────                                              │
+│  • Reputation signatures                                        │
+│  • Whitelist/blacklist filters                                  │
+│  • Client-side acceptance predicates                            │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
+```
+
 ### Transaction Workflow: From Person A to Person B
 
 The transfer process involves two distinct phases:
@@ -150,6 +154,8 @@ ChainCash operates on a **hybrid model**—not pure off-chain like Lightning Net
 | **Note Verification** | Recipients must verify reserves exist on-chain |
 
 ### The Hybrid Flow Diagram
+
+```
 ┌────────────────────────────────────────────────────────────────────┐
 │                     HYBRID OFF-CHAIN / ON-CHAIN                    │
 ├────────────────────────────────────────────────────────────────────┤
@@ -157,14 +163,14 @@ ChainCash operates on a **hybrid model**—not pure off-chain like Lightning Net
 │   OFF-CHAIN PHASE              │   ON-CHAIN PHASE (Ergo)           │
 │   ───────────────              │   ──────────────────────────────  │
 │                                │                                   │
-│   [Agent creates reserves]────>│ [Reserves locked in smart contract]│
+│  [Agent creates reserves]────>│ [Reserves locked in smart contract]│
 │                                │                                   │
 │   [Person A signs note]        │                                   │
 │   [Person B validates]         │                                   │
 │   [Reputation check]           │                                   │
 │   [Acceptance decision]        │                                   │
 │                                │                                   │
-│   [Person A broadcasts]────────>│ [Transaction submitted]           │
+│  [Person A broadcasts]────────>│ [Transaction submitted]           │
 │                                │                                   │
 │   [Person B delays claim]      │ [Note pending on-chain]           │
 │                                │                                   │
@@ -172,6 +178,8 @@ ChainCash operates on a **hybrid model**—not pure off-chain like Lightning Net
 │                                │ [Final settlement complete]       │
 │                                │                                   │
 └────────────────────────────────────────────────────────────────────┘
+```
+
 ### Off-Chain Advantages
 
 | Advantage | Explanation |
