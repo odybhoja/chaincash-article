@@ -1,7 +1,3 @@
-# chaincash-article
-Chaincash article 
-
-
 # ChainCash: Elastic Peer-to-Peer Money on the Ergo Blockchain
 
 ## Executive Summary
