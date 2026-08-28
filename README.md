@@ -118,6 +118,7 @@ The transfer process involves two distinct phases:
 
 ### Acceptance Predicate Configuration
 
+```
 Person B's ChainCash server uses TOML-based settings defining acceptance rules:toml
 Example acceptance predicate configuration
 [whitelist]
@@ -126,7 +127,7 @@ holders = ["address1", "address2"]
 minimum_level = 1.5  # 150% backed
 [ccip_support]
 supported_versions = ["1.0", "1.1", "1.2"]
----
+```
 
 ## ChainCash Off-Chain Capabilities: Hybrid Architecture
 
