@@ -13,7 +13,7 @@ A technical blog post exploring how ChainCash enables elastic, peer-to-peer mone
 - [About This Article](#about-this-article)
 - [Who Is This For?](#who-is-this-for)
 - [What's Inside](#whats-inside)
-- [Reading the Post](#reading-the-post)
+- [Reading the blog Post](#reading-the-post) <<<<=====
 - [Correcting / Improving the Article](#correcting--improving-the-article)
 - [Learn More About ChainCash](#learn-more-about-chaincash)
 - [License](#license)
