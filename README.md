@@ -1,363 +1,244 @@
-# ChainCash: Elastic Peer-to-Peer Money on the Ergo Blockchain
 
-## Executive Summary
+# ChainCash
 
-ChainCash is a decentralized monetary system that enables flexible money creation by combining trust mechanisms and blockchain-backed assets. Built on the Ergo blockchain, it allows users to create and manage digital currency securely while adapting to economic needs—a solution addressing cryptocurrency volatility and fixed supply limitations.
+**Elastic peer-to-peer money, collectively backed by blockchain assets and trust.**
 
----
+[![License](https://img.shields.io/badge/license-CC0--1.0-blue.svg)](LICENSE)
+[![Ergo](https://img.shields.io/badge/built%20on-Ergo-purple.svg)](https://ergoplatform.org)
+[![Status](https://img.shields.io/badge/status-prototype-orange.svg)](#status)
 
-## What is ChainCash?
+ChainCash is a decentralized monetary system that enables flexible money creation by combining trust mechanisms and blockchain-backed assets. Built on the [Ergo blockchain](https://ergoplatform.org), it allows anyone to issue, hold, and transfer digital currency securely—no central authority required.
 
-### Definition
-
-ChainCash is a **decentralized monetary system** built on the **Ergo blockchain** that enables flexible money creation through a combination of **trust** and **blockchain-backed assets**. It operates on the principle of modern "free banking," where multiple entities can issue their own currency notes backed by their individual reserves.
-
-### Key Characteristics
-
-| Characteristic | Description |
-|----------------|-------------|
-| **Platform** | Ergo blockchain |
-| **Money Supply** | Elastic (adapts to economic conditions) |
-| **Backed By** | Digital assets or trust |
-| **Status** | Prototype/research (active 2026 development) |
-| **Governance** | CCIPs (ChainCash Improvement Proposals) |
-
-### The Problem ChainCash Solves
-
-Traditional financial systems suffer from **centralization**, **high costs**, and **limited access**. Meanwhile, cryptocurrencies like Bitcoin face **price volatility** and **inelastic supply** problems:
-
-- **Inelastic supply**: Bitcoin's fixed supply disconnects from economic activity, causing volatility
-- **Algorithmic stablecoins**: Tied to underlying crypto, limiting scalability
-- **Centralized stablecoins**: Introduce centralization, contradicting decentralized principles
-
-ChainCash bridges this gap by creating digital IOU notes backed by blockchain assets, replicating early paper money systems with blockchain transparency.
+> **⚠️ Status: Active Research & Prototype**
+> ChainCash is prototype software, not a finished wallet-native payment rail. Contracts, server APIs, and refund logic change frequently. Treat this as architectural tooling for builders—verify all details against the latest commits before relying on it in production.
 
 ---
 
-## Why ChainCash? The Motivation
+## 📋 Table of Contents
 
-### Evolution of Money
-
-Money has evolved through distinct phases:
-
-1. **Barter & Commodity Money** → 2. **Metal Coins** → 3. **Paper Money** → 4. **Fiat Currency** → 5. **Cryptocurrencies** → **6. ChainCash?**
-
-Historically, paper money was backed by tangible assets (gold). Fiat currency removed this backing, relying on government trust. Cryptocurrencies reintroduced commodity characteristics but introduced new limitations.
-
-### The Need for Elastic Money
-
-The current cryptocurrency landscape faces a critical challenge: **supply inelasticity**. Economic activity requires money supply that can expand and contract with demand. Fixed-supply assets cannot fulfill this role as practical medium of exchange.
-
-ChainCash addresses this by enabling:
-- **Flexible issuance** based on real economic needs
-- **Multiple issuers** competing on trust and collateral quality
-- **Self-sovereign money creation** without central authorities
-
-### Key Benefits Over Existing Systems
-
-| System | Centralization | Volatility | Elastic Supply |
-|--------|---------------|------------|----------------|
-| Traditional Banks | High | Low (fiat) | Yes |
-| Bitcoin | None | High | No |
-| Stablecoins | Mixed | Low | Limited |
-| **ChainCash** | **None** | **Low** | **Yes** |
+- [Why ChainCash?](#why-chaincash)
+- [How It Works](#how-it-works)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [API Reference](#api-reference)
+- [Use Cases](#use-cases)
+- [Security Model](#security-model)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [Resources](#resources)
+- [License](#license)
 
 ---
 
-## How ChainCash Works: Technical Architecture
+## Why ChainCash?
 
-### Core Components
+Most cryptocurrencies share two limitations: **rigid supply** and **speculative drift**. Fixed-supply assets resist economic adaptation, while volatility undermines their usefulness as everyday money.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    CHAINCASH ARCHITECTURE                       │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  AGENTS          RESERVES         NOTES        SMART CONTRACTS  │
-│  ──────          ───────          ────         ──────────────   │
-│  • Users/        • Digital        • Digital    • Enforce        │
-│    Entities        assets           IOU notes    rules          │
-│  • Issue notes   • Backing        • Signed     • Track          │
-│  • Maintain      • Collateral     • Transfer   • Validate       │
-│    reputation      level            capable      ownership      │
-│                                                                 │
-│  TRUST MECHANISMS                                               │
-│  ─────────────────                                              │
-│  • Reputation signatures                                        │
-│  • Whitelist/blacklist filters                                  │
-│  • Client-side acceptance predicates                            │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
+ChainCash takes a different path—one rooted in the historical practice of *free banking*, where privately issued currency competed on trust and redeemability:
 
-### Transaction Workflow: From Person A to Person B
-
-The transfer process involves two distinct phases:
-
-#### Phase 1: Sender Creates and Submits
-
-| Step | Action | Technical Detail |
-|------|--------|------------------|
-| 1 | **Spender Signs** | Person A signs note with private key (Schnorr signature) |
-| 2 | **Include Backing** | Note carries collateral data, reputation proof, history |
-| 3 | **Broadcast** | Transaction submitted to Ergo blockchain |
-| 4 | **Create Incoming Note** | Recipient-owned note exists (not yet claimable) |
-
-#### Phase 2: Recipient Validates and Claims
-
-| Step | Action | Technical Detail |
-|------|--------|------------------|
-| 1 | **Receive Notification** | Person B detects incoming note |
-| 2 | **Validate** | Check backing, reputation, whitelist/blacklist |
-| 3 | **Decision** | Accept or reject based on acceptance predicate |
-| 4 | **Claim** | If approved, claim into wallet (becomes spendable) |
-
-### Acceptance Predicate Configuration
-
-```
-Person B's ChainCash server uses TOML-based settings defining acceptance rules:toml
-Example acceptance predicate configuration
-[whitelist]
-holders = ["address1", "address2"]
-[collateralization]
-minimum_level = 1.5  # 150% backed
-[ccip_support]
-supported_versions = ["1.0", "1.1", "1.2"]
-```
-
-## ChainCash Off-Chain Capabilities: Hybrid Architecture
-
-### Understanding the Off-Chain Reality
-
-ChainCash operates on a **hybrid model**—not pure off-chain like Lightning Network, but not fully on-chain either. Here's what can happen off-chain versus what must remain on-chain:
-
-### Off-Chain Elements ✅
-
-| Component | Details |
-|-----------|---------|
-| **Note Signing** | Person A creates signed note locally before broadcasting |
-| **Validation** | Person B's server validates backing, reputation, whitelist off-chain |
-| **Acceptance Predicate** | Client-side logic runs independently on Person B's server |
-| **Messaging/Timing** | Two-step transfer allows Person B to delay claiming until convenient |
-| **Private Communication** | Notes can carry metadata, comments, instructions |
-
-### On-Chain Requirements ⛓️
-
-| Component | Reason |
-|-----------|--------|
-| **Reserve Creation** | Collateral must be immutably recorded on Ergo |
-| **Smart Contract Enforcement** | Protocol rules enforced by blockchain |
-| **Final Settlement** | Ownership transfer finalized on-chain |
-| **Note Verification** | Recipients must verify reserves exist on-chain |
-
-### The Hybrid Flow Diagram
-
-```
-┌────────────────────────────────────────────────────────────────────┐
-│                     HYBRID OFF-CHAIN / ON-CHAIN                    │
-├────────────────────────────────────────────────────────────────────┤
-│                                                                    │
-│   OFF-CHAIN PHASE              │   ON-CHAIN PHASE (Ergo)           │
-│   ───────────────              │   ──────────────────────────────  │
-│                                │                                   │
-│  [Agent creates reserves]────>│ [Reserves locked in smart contract]│
-│                                │                                   │
-│   [Person A signs note]        │                                   │
-│   [Person B validates]         │                                   │
-│   [Reputation check]           │                                   │
-│   [Acceptance decision]        │                                   │
-│                                │                                   │
-│  [Person A broadcasts]────────>│ [Transaction submitted]           │
-│                                │                                   │
-│   [Person B delays claim]      │ [Note pending on-chain]           │
-│                                │                                   │
-│   [Person B claims]───────────>│ [Ownership transferred]           │
-│                                │ [Final settlement complete]       │
-│                                │                                   │
-└────────────────────────────────────────────────────────────────────┘
-```
-
-### Off-Chain Advantages
-
-| Advantage | Explanation |
-|-----------|-------------|
-| **Cost Efficiency** | Validation happens off-chain; rejects don't waste gas |
-| **Flexibility** | Recipients can delay claiming until optimal timing |
-| **Privacy** | Acceptance decisions made privately before commitment |
-| **Scalability** | Not every validation attempt consumes blockchain resources |
-
-### Limitations
-
-| Limitation | Workaround |
-|------------|------------|
-| **Must settle on-chain eventually** | No purely off-chain circulation |
-| **Requires internet connection** | Both parties need connectivity for validation |
-| **Not instant finality** | Claim phase still requires block confirmation |
+- **Elastic supply** — Money expands when issuers commit reserves and contracts when reserves are redeemed. No protocol-hardcoded cap, no monetary committee.
+- **Collective backing** — Notes are backed by on-chain collateral (ERG and Ergo-native tokens) plus off-chain trust endorsements.
+- **Credible commitments** — Reserve boxes are governed by smart contracts, so issuers can't misappropriate backing. Holders can claim refunds if an issuer defaults.
+- **Permissionless issuance** — Anyone with Ergo wallet access can become an issuer. No license, no gatekeeper.
 
 ---
 
-## Real-World Use Cases
+## How It Works
 
-### 1. Local Community Currency
+ChainCash introduces three core concepts:
 
-A town creates local currency using ChainCash, backed by local businesses and residents. This stimulates the local economy while keeping value circulating within the community.
+### 1. Reserve Boxes
 
-### 2. Cross-Border Trade
+Issuers lock ERG or tokens into Ergo UTXO boxes governed by ChainCash scripts. These boxes prove, publicly and deterministically, that issued notes have real backing.
 
-Exporters and importers in different countries use ChainCash for faster, cheaper transactions—avoiding currency conversion fees and traditional banking intermediaries.
+### 2. Notes
 
-### 3. Creator Economy
+Notes are the money itself. Each note references its reserve and travels peer to peer as a spendable output. Transferring a note is a standard Ergo transaction—no intermediary, no processor, no clearing house.
 
-Content creators issue notes backed by future content output or existing works. Fans pay directly, eliminating platform middlemen and high fees.
+### 3. Trust Signatures
 
-### 4. Indie Game Development
+Notes carry issuer signatures via Ergo's Schnorr scheme. Holders accepting a note implicitly trust the issuer's redeemability. Multi-party endorsement arrangements are supported, letting communities share risk across trusted signers.
 
-Game developers raise funding directly from fans through ChainCash notes, avoiding crowdfunding platform fees and strict rules. Fans participate in development and receive rewards.
+```
+┌────────────────────────────────────────────────┐
+│                ChainCash Layer                  │
+│                                                │
+│   Issuer Notes ── Reserve Boxes ── Trust       │
+│        │               │             │         │
+└────────┼───────────────┼─────────────┼─────────┘
+         ▼               ▼             ▼
+┌────────────────────────────────────────────────┐
+│           Ergo Blockchain (eUTXO)              │
+│      Deterministic contracts • Sigma ZKPs      │
+└────────────────────────────────────────────────┘
+```
 
-### 5. Festival Tokens
+---
 
-Event organizers create exclusive crypto experiences blending physical and digital worlds. Attendees receive tokens unlocking exclusive experiences, tradable during and after the event.
+## Installation
 
-### 6. Microloans for Farmers
+### Prerequisites
 
-Remote farmers access microloans through ChainCash to purchase seeds and equipment, backed by community trust rather than traditional credit scores.
+- **Rust** 1.75+ (`rustup install stable`)
+- An **Ergo node** (local) or a public Ergo explorer/API endpoint
+- A funded ERG wallet (for reserve locking and transaction fees)
+
+### Build from Source
+
+```bash
+git clone https://github.com/BetterMoneyLabs/chaincash-rs.git
+cd chaincash-rs
+cargo build --release
+```
+
+The compiled binary will be available at `target/release/chaincash`.
+
+### Configuration
+
+Copy the example configuration and adjust for your environment:
+
+```bash
+cp config.example.toml config.toml
+```
+
+Key settings:
+
+```toml
+[node]
+explorer_url = "https://api.ergoplatform.com"   # or your local node
+
+[wallet]
+mnemonic_env = "CHAINCASH_MNEMONIC"            # never hardcode your seed
+
+[server]
+host = "127.0.0.1"
+port = 9001
+```
+
+---
+
+## Quick Start
+
+Spin up a server, create a reserve, issue notes, and send a payment—all in four commands.
+
+### 1. Start the Server
+
+```bash
+export CHAINCASH_MNEMONIC="your twelve word seed phrase"
+./target/release/chaincash server --config config.toml
+```
+
+### 2. Create a Reserve
+
+Lock 1,000 ERG into a ChainCash reserve contract:
+
+```bash
+chaincash reserves create --amount 1000
+```
+
+After confirmation on-chain, the reserve ID is printed. You'll use it for issuance.
+
+### 3. Issue Notes
+
+Mint 500 units of money against the reserve:
+
+```bash
+chaincash notes issue --reserve <RESERVE_ID> --amount 500
+```
+
+Notes now sit in your wallet as spendable outputs, ready to circulate.
+
+### 4. Send a Peer-to-Peer Payment
+
+Transfer notes directly to a recipient:
+
+```bash
+chaincash notes send --to <RECIPIENT_ADDRESS> --amount 250
+```
+
+That's it. The recipient holds ChainCash money backed by verifiable on-chain reserves—settled on Ergo, no third party involved.
+
+---
+
+## API Reference
+
+The server exposes a REST API for programmatic integration. Endpoints include:
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/reserves` | Create a new reserve box |
+| `GET`  | `/reserves/:id` | Inspect reserve status and backing |
+| `POST` | `/notes` | Issue notes against a reserve |
+| `POST` | `/notes/transfer` | Send notes to a recipient |
+| `GET`  | `/notes/:id` | Retrieve note details and provenance |
+
+See [`docs/server.md`](docs/server.md) for the full specification, request/response schemas, and code samples.
+
+---
+
+## Use Cases
+
+ChainCash's flexibility opens monetary designs impossible under fixed-supply protocols:
+
+- **🏛️ Local currencies** — Communities issue money backed by local business reserves, keeping capital circulating regionally.
+- **🌍 Cross-border trade** — Exporters issue notes backed by inventory, cutting FX costs and correspondent-banking delays.
+- **🎨 Creator economies** — Artists and musicians monetize future output through personally backed notes.
+- **🌾 Microfinance** — Cooperatives extend credit in underserved regions without institutional overhead.
+- **🎪 Event currencies** — Festivals issue spendable tokens with exclusive-access perks.
 
 ---
 
 ## Security Model
 
-### Layer 1: Blockchain Foundation
+ChainCash enforces honesty through cryptography, not regulation:
 
-- Reserves secured by **Ergo's Proof-of-Work consensus**
-- Smart contracts enforce **immutable rules**
-- Transaction history **tamper-proof** on-chain
+- **On-chain transparency** — Every reserve, note, and transfer is publicly auditable on Ergo.
+- **Contract-enforced refunds** — If an issuer defaults or goes unresponsive, smart contract refund logic lets holders claim proportional shares of the reserve after a timeout.
+- **Reputation economics** — Untrustworthy issuers face immediate redemption runs; reliable issuers see their notes circulate at par.
 
-### Layer 2: Trust Mechanisms
+**Known limitations (prototype stage):**
 
-- **Reputation signatures** from issuers
-- **Collateralization verification** before acceptance
-- **Whitelist/blacklist** filtering at client level
-
-### Layer 3: Client-Side Validation
-
-- Each recipient acts as their own **risk assessor**
-- Decisions made based on individual **acceptance predicates**
-- No single point of failure or authority
-
-### What Happens if an Agent Defaults?
-
-1. **Reserves become visible on-chain** — other agents see depleted collateral
-2. **Note reputation degrades** — recipients can blacklist the issuer
-3. **Market discipline** — others stop accepting notes from that agent
-4. **No bailouts** — users bear risk individually (free banking principle)
+- Some flows require raw Schnorr signature operations rather than standard wallet UX.
+- Contract definitions and APIs are subject to change—pin to specific commits in production-like setups.
+- Liquidity depends entirely on participating issuers; no guaranteed secondary market exists.
 
 ---
 
-## Challenges and Limitations
+## Roadmap
 
-### Current Development Stage
-
-⚠️ **Prototype Status**: ChainCash is active research software, not production-ready wallet infrastructure:
-
-- Contracts, basis logic, refund handling, and server APIs have changed frequently in 2026
-- Some paths require **raw Schnorr signatures** not yet wallet-supported
-- Treat documentation as architectural context; verify against current repositories
-
-### Technical Challenges
-
-| Challenge | Current Approach |
-|-----------|------------------|
-| **Non-Fungibility of Notes** | Individual note tracking via smart contracts |
-| **Scalability** | Layer optimization on Ergo blockchain |
-| **Regulatory Compliance** | Configurable acceptance predicates |
-| **Privacy Concerns** | Public ledger transparency with selective disclosure |
-| **CCIP Version Compatibility** | Servers declare supported versions; older servers reject newer notes |
+- [ ] Stabilize contract schemas for long-term compatibility
+- [ ] Native wallet integration for note transfers
+- [ ] Multi-signature trust endorsement UX
+- [ ] Secondary-market liquidity tooling
+- [ ] Comprehensive testnet deployment guide
 
 ---
 
-## Getting Started: Developer Guide
+## Contributing
 
-### Prerequisitesbash
-Rust toolchain required
-rustc --version  # Minimum: latest stable
-Clone the repository
-git clone https://github.com/BetterMoneyLabs/chaincash.git
-cd chaincash-rs
-### Build and Run Serverbash
-Compile release build
-cargo build --release
-Start the ChainCash server
-./target/release/chaincash-server
-### Configure Acceptance Predicate
+Contributions are welcome—this project thrives on builders experimenting with monetary primitives.
 
-Create TOML configuration file defining:
-- Whitelist/blacklist rules
-- Minimum collateralization thresholds
-- Supported CCIP versions
+1. Fork the repository and create a feature branch
+2. Run `cargo test` before submitting
+3. Follow existing code style (`cargo fmt` / `cargo clippy`)
+4. Open a pull request with a clear description
 
-### Interact via API
-
-The server exposes REST API endpoints for:
-- Creating reserves
-- Issuing notes
-- Checking note acceptance (`/acceptance/checkNote`)
-- Redemptions and withdrawals
-
-### Contribute to Codebase
-
-Prototype code exists in Scala ([offchain](https://github.com/kushti/chaincash/tree/master/src/main/scala/chaincash/offchain)) and Rust implementations. Contributions welcome for:
-- Contract extensions
-- Integration testing
-- Documentation improvements
-- Wallet compatibility layers
-
----
-
-## Future Developments
-
-### Active Research Areas
-
-1. **NFT Integration**: Using Non-Fungible Tokens as control inputs in note contracts
-2. **Community Currencies**: Carbon credits, loyalty programs, regional money
-3. **Enhanced Privacy**: Zero-knowledge proofs for selective disclosure
-4. **Cross-Chain Bridges**: Extending ChainCash beyond Ergo
-5. **Mobile Wallet Support**: Native integration with consumer wallets
-
-### CCIP Governance
-
-Contract evolution occurs through **ChainCash Improvement Proposals**:
-
-1. **Proposal Stage** → Author submits new CCIP with contracts for public review
-2. **Discussion Stage** → Community debate leading to acceptance or rejection
-3. **Implementation** → Accepted CCIPs integrated into codebase
-
-Older servers continue working but won't recognize new note types without updates.
-
----
-
-## Conclusion
-
-ChainCash represents a bold attempt to reconcile **decentralization** with **practical monetary utility**. By reviving free banking principles through blockchain technology, it offers:
-
-✅ **Elastic money supply** responsive to economic conditions  
-✅ **No central authority** controlling issuance  
-✅ **Transparency** through on-chain verification  
-✅ **Flexibility** for diverse use cases from local currency to creator economies  
-
-While currently in prototype stage, ChainCash opens a promising avenue for monetary innovation that could complement existing cryptocurrency ecosystems. For developers and monetary hackers eager to experiment, the opportunity to contribute—and help shape the future of decentralized money—is open now.
+Good first issues are tagged [`help wanted`](https://github.com/BetterMoneyLabs/chaincash-rs/issues).
 
 ---
 
 ## Resources
 
-| Resource | URL |
-|----------|-----|
-| Official Documentation | https://docs.ergoplatform.com/uses/chaincash |
-| GitHub Repository | https://github.com/BetterMoneyLabs/chaincash |
-| Whitepaper | https://github.com/BetterMoneyLabs/chaincash/blob/master/docs/whitepaper/chaincash.pdf |
-| Server Documentation | https://github.com/BetterMoneyLabs/chaincash/blob/master/docs/server.md |
-| Ergo Forum Discussion | https://ergoforum.org/t/chaincash-a-spender-signed-currency-on-ergo |
+- 📖 [Official Documentation](https://docs.ergoplatform.com/uses/chaincash)
+- 📄 [ChainCash Whitepaper](https://github.com/BetterMoneyLabs/chaincash/blob/master/docs/whitepaper/chaincash.pdf)
+- 🦀 [Scala Reference Implementation](https://github.com/BetterMoneyLabs/chaincash)
+- 💬 [Ergo Forum Discussion](https://ergoforum.org/t/chaincash-a-spender-signed-currency-on-ergo)
+- 🎥 [Video Overview](https://www.youtube.com/watch?v=NxIlIpO6ZVI)
 
 ---
 
-*Disclaimer: ChainCash is prototype software under active development. Contract specifications, APIs, and features may change without notice. Users should verify all technical details against the latest repositories before deployment.*
+## License
+
+This project is licensed under **CC0-1.0** — released into the public domain. See [LICENSE](LICENSE) for details.
+
