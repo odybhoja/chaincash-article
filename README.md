@@ -62,7 +62,7 @@ The article is structured in five sections:
 
 The full article is available as a single Markdown file:
 
-📄 **[`l-PeertoPeerMoneyforEveryone.md`](chaincash-peer-to-peer-money-for-everyone.md)**
+📄 **[`PeertoPeerMoneyforEveryone.md`](chaincash-peer-to-peer-money-for-everyone.md)**
 
 You can read it directly on GitHub or download it for offline reading.
 
